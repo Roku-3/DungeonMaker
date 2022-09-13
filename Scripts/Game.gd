@@ -21,11 +21,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	move_selection()
 	var cellPos =  Vector2(floor(selectionIndex.x)/8, floor(selectionIndex.y)/8)
-	if Input.is_action_just_pressed("ui_accept"):
-		if $selectedTileMap.get_cellv(cellPos) == -1:
-			$selectedTileMap.set_cellv(cellPos, 0)
-		elif $selectedTileMap.get_cellv(cellPos) == 0:
-			$selectedTileMap.set_cellv(cellPos, -1)
+	if Input.is_action_pressed("ui_accept"):
+		for cellOffset in [ Vector2.ZERO, Vector2(1,0), Vector2(-1,0), Vector2(0,1), Vector2(0,-1)]:
+			if $blockTileMap.get_cellv(cellPos+cellOffset) != -1:
+				$selectedTileMap.set_cellv(cellPos+cellOffset, 0)
+			#elif $selectedTileMap.get_cellv(cellPos) == 0:
+			#	$selectedTileMap.set_cellv(cellPos, -1)
 
 func move_selection() -> void:
 	var selectionDirection = Vector2.ZERO
@@ -55,4 +56,9 @@ func move_selection() -> void:
 		selectionIndex.y = 0
 
 	$Target.position = selectionIndex + $blockTileMap.position
-	$targetingTileMap.set_cell(floor(selectionIndex.x)/8, floor(selectionIndex.y)/8, 0)
+	var cellPos =  Vector2(floor(selectionIndex.x)/8, floor(selectionIndex.y)/8)
+	$targetingTileMap.set_cellv(cellPos, 0)
+	$targetingTileMap.set_cellv(cellPos-Vector2(1,0), 0)
+	$targetingTileMap.set_cellv(cellPos-Vector2(-1,0), 0)
+	$targetingTileMap.set_cellv(cellPos-Vector2(0,1), 0)
+	$targetingTileMap.set_cellv(cellPos-Vector2(0,-1), 0)
